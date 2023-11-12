@@ -1,0 +1,47 @@
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.login {
+  background: #dedede;
+  border-radius: 5px;
+  box-shadow: 10px 10px 10px 10px #00000030;
+  padding: 20px;
+  width: 350px;
+}
+
+.login h2 {
+  text-align: center;
+}
+
+.custom-input {
+  border: 2px solid #3498db;
+  border-radius: 5px;
+  padding: 12px;
+  font-size: 16px;
+  margin-bottom: 15px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.custom-input:focus {
+  border-color: #2980b9;
+}
+
+.custom-button {
+  background-color: #3498db;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 12px 20px;
+  font-size: 18px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.custom-button:hover {
+  background-color: #2980b9;
+}
