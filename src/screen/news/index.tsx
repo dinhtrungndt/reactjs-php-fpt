@@ -11,7 +11,6 @@ import ProfileScreen from "../profile/index.tsx";
 function NewsScreen() {
   const [news, setNews] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedNews, setSelectedNews] = useState(null);
 
   // Thêm state để lưu thông tin bản tin cần cập nhật
   const [updateNews, setUpdateNews] = useState({
