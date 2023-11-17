@@ -10,6 +10,7 @@ import ProfileScreen from "../profile/index.tsx";
 import UpdateNews from "./component/update-news.tsx";
 
 import "./css/style.css";
+import MonHocScreen from "../monhoc/index.tsx";
 
 function NewsScreen() {
   const [news, setNews] = useState([]);
@@ -166,6 +167,9 @@ function NewsScreen() {
               ))}
             </tbody>
           </table>
+        </Tab>
+        <Tab eventKey="monhoc" title="Môn học">
+          <MonHocScreen />
         </Tab>
         <Tab eventKey="lichhoc" title="Lịch học">
           <LichHocScreen />

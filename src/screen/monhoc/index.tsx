@@ -7,7 +7,7 @@ import AxiosInstance from "../../helper/AxiosInstance.js";
 import AddUsers from "./components/add.tsx";
 import UpdateUsers from "./components/update.tsx";
 
-function LichHocScreen() {
+function MonHocScreen() {
   const [news, setNews] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isOpenUpdateModal, setIsOpenUpdateModal] = useState(false);
@@ -31,16 +31,25 @@ function LichHocScreen() {
   };
 
   useEffect(() => {
+    const fetchNews = async () => {
+      const result = await AxiosInstance().get("/get-monhoc.php");
+      setNews(result);
+    };
+
+    fetchNews();
+  }, []);
+
+  useEffect(() => {
     const fetchData = async () => {
       try {
         const [newsResult, topicsResult, usersResult] = await Promise.all([
           AxiosInstance().get("/get-lichhoc.php"),
           AxiosInstance().get("/get-monhoc.php"),
-          AxiosInstance().get("/get-users.php"), // Adjust the endpoint based on your API
+          AxiosInstance().get("/get-loaimonhoc.php"), // Adjust the endpoint based on your API
         ]);
 
         const newsWithUserData = newsResult.map((newsItem) => {
-          const user = usersResult.find(
+          const loaimonhoc = usersResult.find(
             (userItem) => userItem.id === newsItem.user_id
           );
           const topic = topicsResult.find(
@@ -49,7 +58,9 @@ function LichHocScreen() {
           return {
             ...newsItem,
             monhoc_name: topic ? topic.tenmonhoc : "Unknown Topic",
-            user_name: user ? user.name : "Unknown User",
+            loaimonhoc_name: loaimonhoc
+              ? loaimonhoc.tenloaimon
+              : "Unknown Topic",
           };
         });
 
@@ -66,9 +77,9 @@ function LichHocScreen() {
     <div>
       <Tabs id="controlled-tabs" className="mb-3" variant="pills">
         <Tab eventKey="list">
-          <h1>Danh sách lịch học </h1>
+          <h1>Danh sách môn học </h1>
           <button onClick={openModal} className="btn btn-primary mb-3 mx-3">
-            Thêm lịch học
+            Thêm môn học
           </button>
           <AddUsers isOpen={isModalOpen} onRequestClose={closeModal} />
 
@@ -76,22 +87,16 @@ function LichHocScreen() {
             <thead>
               <tr>
                 <th>STT</th>
-                <th>Ngày học</th>
-                <th>Địa điểm</th>
-                <th>Ca</th>
-                <th>Môn học</th>
-                <th>Giáo viên</th>
+                <th>Tên môn học</th>
+                <th>Loại môn học</th>
               </tr>
             </thead>
             <tbody>
               {news.map((item, index) => (
                 <tr key={index}>
                   <td>{index + 1}</td>
-                  <td>{item.ngayhoc}</td>
-                  <td>{item.diadiem}</td>
-                  <td>{item.ca}</td>
                   <td>{item.monhoc_name}</td>
-                  <td>{item.user_name}</td>
+                  <td>{item.loaimonhoc_name}</td>
                   <button
                     className="btn btn-primary mb-1 mx-1"
                     onClick={() => openUpdateModal(item.id)}
@@ -120,4 +125,4 @@ function LichHocScreen() {
   );
 }
 
-export default LichHocScreen;
+export default MonHocScreen;
