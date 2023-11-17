@@ -14,6 +14,8 @@ function AddUsers({ isOpen, onRequestClose }) {
   const [name, setName] = useState("");
   const [role, setRole] = useState("");
   const [avatar, setAvatar] = useState("");
+  const [previewImage, setPreviewImage] = useState("");
+  const [selectedImage, setSelectedImage] = useState(null);
 
   const handleSaveUser = async () => {
     try {
@@ -25,8 +27,7 @@ function AddUsers({ isOpen, onRequestClose }) {
         email === "" ||
         password === "" ||
         name === "" ||
-        role === "" ||
-        avatar === ""
+        role === ""
       ) {
         return toast.error("Vui lòng nhập đầy đủ thông tin!");
       }
@@ -63,6 +64,27 @@ function AddUsers({ isOpen, onRequestClose }) {
       console.log(error);
       return false;
     }
+  };
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    const imageUrl = URL.createObjectURL(file);
+    setPreviewImage(imageUrl);
+    setSelectedImage(file);
+    const formData = new FormData();
+    formData.append("image", file);
+    const result = await AxiosInstance("multipart/form-data").post(
+      "/upload-file.php",
+      formData
+    );
+    console.log(result);
+    setAvatar(result.path);
+  };
+
+  const handleImageChange = (e) => {
+    const imageUrl = e.target.value;
+    setPreviewImage(imageUrl);
+    setAvatar(imageUrl); // Cập nhật state 'image' với URL ảnh
   };
 
   return (
@@ -111,13 +133,19 @@ function AddUsers({ isOpen, onRequestClose }) {
           />
         </div>
         <div>
-          <label htmlFor="avatar">Avatar:</label>
-          <input
-            type="text"
-            id="avatar"
-            value={avatar}
-            onChange={(e) => setAvatar(e.target.value)}
-          />
+          <label htmlFor="image">Avatar:</label>
+          <div className="link-anh">
+            <input
+              type="text"
+              id="image"
+              value={avatar}
+              onChange={handleImageChange}
+            />
+            <input type="file" accept="image/*" onChange={handleFileChange} />
+            {previewImage && (
+              <img src={previewImage} alt="Preview" className="preview-image" />
+            )}
+          </div>
         </div>
       </form>
       <button className="cancel-btn" onClick={onRequestClose}>

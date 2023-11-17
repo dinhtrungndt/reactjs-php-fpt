@@ -4,26 +4,27 @@ import AxiosInstance from "../../../helper/AxiosInstance";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-import "./css/NewsModal.css";
+import "./css/AddUsers.css";
 
 Modal.setAppElement("#root"); // Specify the root element for the modal
 
-interface UpdateNewsProps {
+interface UpdateUsersProps {
   isOpen: boolean;
   onRequestClose: () => void;
   id: number | null;
 }
 
-const UpdateNews = ({ isOpen, onRequestClose, id }) => {
-  const [topic_id, setTopicId] = useState(1);
-  const [image, setImage] = useState("");
+const UpdateUsers = ({ isOpen, onRequestClose, id }) => {
+  const [avatar, setAvatar] = useState("");
   const [previewImage, setPreviewImage] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
 
-  const [newsDetails, setNewsDetails] = useState({
-    title: "",
-    content: "",
-    image: "",
+  const [usersDetails, setusersDetails] = useState({
+    email: "",
+    password: "",
+    name: "",
+    role: "",
+    avatar: "",
   });
 
   const handleFileChange = async (e) => {
@@ -38,98 +39,108 @@ const UpdateNews = ({ isOpen, onRequestClose, id }) => {
       formData
     );
     console.log(result);
-    setImage(result.path);
+    setAvatar(result.path);
   };
 
   const handleImageChange = (e) => {
     const imageUrl = e.target.value;
     setPreviewImage(imageUrl);
-    setImage(imageUrl); // Cập nhật state 'image' với URL ảnh
+    setAvatar(imageUrl); // Cập nhật state 'image' với URL ảnh
   };
 
   useEffect(() => {
-    const fetchNewsDetails = async () => {
-      const result = await AxiosInstance().get(`/get-news-detail.php?id=${id}`);
+    const fetchusersDetails = async () => {
+      const result = await AxiosInstance().get(
+        `/get-users-detail.php?id=${id}`
+      );
 
-      setNewsDetails(result);
-      setTopicId(result.topic_id);
-      setImage(result.image);
+      setusersDetails(result);
+      setAvatar(result.image);
       setPreviewImage(result.image);
     };
 
     if (id) {
-      fetchNewsDetails();
+      fetchusersDetails();
     }
   }, [isOpen, id]);
 
-  const handleUpdateNews = async () => {
+  const handleUpdateUsers = async () => {
     try {
       const body = {
         id: id,
-        ...newsDetails,
-        image: image,
-        topic_id: topic_id,
+        ...usersDetails,
+        avatar: avatar,
       };
 
-      await AxiosInstance().put(`/update-news.php`, body);
+      await AxiosInstance().put(`/update-users.php`, body);
 
       // Display a success notification
-      toast.success("Cập nhật Tin Tức thành công!");
+      toast.success("Cập nhật Người Dùng thành công!");
 
       // Close the modal
       onRequestClose();
     } catch (e) {
-      console.error("Error updating news:", e);
+      console.error("Error updating users:", e);
     }
   };
-
-  const [topics, setTopics] = useState([]);
-  useEffect(() => {
-    const fetchTopics = async () => {
-      const result = await AxiosInstance().get("/get-topic.php");
-      setTopics(result);
-    };
-
-    fetchTopics();
-  }, []);
 
   return (
     <Modal
       isOpen={isOpen}
       onRequestClose={onRequestClose}
-      contentLabel="Cập nhật Tin Tức"
+      contentLabel="Cập nhật Người Dùng"
       className="custom-modal"
     >
-      <h2>Cập nhật Tin Tức</h2>
+      <h2>Cập nhật Người Dùng</h2>
       <form>
         <div>
-          <label htmlFor="title">Tiêu đề:</label>
+          <label htmlFor="title">Name:</label>
           <input
             type="text"
-            id="title"
-            value={newsDetails.title}
+            id="name"
+            value={usersDetails.name}
             onChange={(e) =>
-              setNewsDetails({ ...newsDetails, title: e.target.value })
+              setusersDetails({ ...usersDetails, name: e.target.value })
             }
           />
         </div>
         <div>
-          <label htmlFor="content">Nội dung:</label>
-          <textarea
-            id="content"
-            value={newsDetails.content}
+          <label htmlFor="content">Email:</label>
+          <input
+            id="email"
+            value={usersDetails.email}
             onChange={(e) =>
-              setNewsDetails({ ...newsDetails, content: e.target.value })
+              setusersDetails({ ...usersDetails, email: e.target.value })
             }
           />
         </div>
         <div>
-          <label htmlFor="image">Hình ảnh:</label>
+          <label htmlFor="content">Password:</label>
+          <input
+            id="password"
+            value={usersDetails.password}
+            onChange={(e) =>
+              setusersDetails({ ...usersDetails, password: e.target.value })
+            }
+          />
+        </div>
+        <div>
+          <label htmlFor="content">Role:</label>
+          <input
+            id="role"
+            value={usersDetails.role}
+            onChange={(e) =>
+              setusersDetails({ ...usersDetails, role: e.target.value })
+            }
+          />
+        </div>
+        <div>
+          <label htmlFor="image">Avatar:</label>
           <div className="link-anh">
             <input
               type="text"
-              id="image"
-              value={image}
+              id="avatar"
+              value={avatar}
               onChange={handleImageChange}
             />
             <input type="file" accept="image/*" onChange={handleFileChange} />
@@ -138,18 +149,11 @@ const UpdateNews = ({ isOpen, onRequestClose, id }) => {
             )}
           </div>
         </div>
-        <select value={topic_id} onChange={(e) => setTopicId(e.target.value)}>
-          {topics.map((item, index) => (
-            <option key={index} value={item.id}>
-              {item.name}
-            </option>
-          ))}
-        </select>
       </form>
       <button className="cancel-btn" onClick={onRequestClose}>
         Hủy cập nhật
       </button>
-      <button className="save-btn" onClick={handleUpdateNews}>
+      <button className="save-btn" onClick={handleUpdateUsers}>
         Cập nhật
       </button>
       <ToastContainer />
@@ -157,4 +161,4 @@ const UpdateNews = ({ isOpen, onRequestClose, id }) => {
   );
 };
 
-export default UpdateNews;
+export default UpdateUsers;

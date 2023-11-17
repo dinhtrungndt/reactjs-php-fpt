@@ -5,10 +5,13 @@ import "react-toastify/dist/ReactToastify.css";
 
 import AxiosInstance from "../../helper/AxiosInstance.js";
 import AddUsers from "./components/add.tsx";
+import UpdateUsers from "./components/update.tsx";
 
 function ProfileScreen() {
   const [news, setNews] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isOpenUpdateModal, setIsOpenUpdateModal] = useState(false);
+  const [updateModalId, setUpdateModalId] = useState(null);
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -16,6 +19,15 @@ function ProfileScreen() {
 
   const closeModal = () => {
     setIsModalOpen(false);
+  };
+
+  const closeUpdateModal = () => {
+    setIsOpenUpdateModal(false);
+  };
+
+  const openUpdateModal = (id) => {
+    setIsOpenUpdateModal(true);
+    setUpdateModalId(id);
   };
 
   const handleDelete = async (id) => {
@@ -82,7 +94,17 @@ function ProfileScreen() {
                       />
                     )}
                   </td>
-                  <button className="btn btn-primary mb-1 mx-1">Sửa</button>
+                  <button
+                    className="btn btn-primary mb-1 mx-1"
+                    onClick={() => openUpdateModal(item.id)}
+                  >
+                    Sửa
+                  </button>
+                  <UpdateUsers
+                    isOpen={isOpenUpdateModal}
+                    onRequestClose={closeUpdateModal}
+                    id={updateModalId}
+                  />
                   <button
                     onClick={() => handleDelete(item.id)}
                     className="btn btn-danger mb-1"
