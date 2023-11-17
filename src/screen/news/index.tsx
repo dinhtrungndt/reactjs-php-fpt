@@ -7,20 +7,13 @@ import AxiosInstance from "../../helper/AxiosInstance.js";
 import LichHocScreen from "../lichhoc/index.tsx";
 import BangDiemScreen from "../bangdiem/bangdiem.tsx";
 import ProfileScreen from "../profile/index.tsx";
+import UpdateNews from "./component/update-news.tsx";
 
 function NewsScreen() {
   const [news, setNews] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  // Thêm state để lưu thông tin bản tin cần cập nhật
-  const [updateNews, setUpdateNews] = useState({
-    id: null,
-    title: "",
-    content: "",
-    image: "",
-    user_id: "",
-    topic_id: "",
-  });
+  const [isOpenUpdateModal, setIsOpenUpdateModal] = useState(false);
+  const [updateModalId, setUpdateModalId] = useState(null);
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -28,6 +21,15 @@ function NewsScreen() {
 
   const closeModal = () => {
     setIsModalOpen(false);
+  };
+
+  const openUpdateModal = (id) => {
+    setIsOpenUpdateModal(true);
+    setUpdateModalId(id);
+  };
+
+  const closeUpdateModal = () => {
+    setIsOpenUpdateModal(false);
   };
 
   const handleDelete = async (id) => {
@@ -98,7 +100,18 @@ function NewsScreen() {
                   <td>{item.created_at}</td>
                   <td>{item.user_id}</td>
                   <td>{item.topic_id}</td>
-                  <button className="btn btn-primary mb-1 mx-1">Sửa</button>
+                  <button
+                    className="btn btn-primary mb-1 mx-1"
+                    onClick={() => openUpdateModal(item.id)}
+                  >
+                    Sửa
+                  </button>
+                  <UpdateNews
+                    isOpen={isOpenUpdateModal}
+                    onRequestClose={closeUpdateModal}
+                    id={updateModalId}
+                  />
+
                   <button
                     onClick={() => handleDelete(item.id)}
                     className="btn btn-danger mb-1"

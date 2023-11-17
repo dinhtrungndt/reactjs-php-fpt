@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Modal from "react-modal";
 import AxiosInstance from "../../../helper/AxiosInstance";
 import { ToastContainer, toast } from "react-toastify";
@@ -13,7 +13,30 @@ function NewsModal({ isOpen, onRequestClose, onNewsAdded }) {
   const [content, setContent] = useState("");
   const [image, setImage] = useState("");
   const [user_id, setUserId] = useState("");
-  const [topic_id, setTopicId] = useState("");
+  const [topic_id, setTopicId] = useState(1);
+  const [previewImage, setPreviewImage] = useState("");
+  const [selectedImage, setSelectedImage] = useState(null);
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    const imageUrl = URL.createObjectURL(file);
+    setPreviewImage(imageUrl);
+    setSelectedImage(file);
+    const formData = new FormData();
+    formData.append("image", file);
+    const result = await AxiosInstance("multipart/form-data").post(
+      "/upload-file.php",
+      formData
+    );
+    console.log(result);
+    setImage(result.path);
+  };
+
+  const handleImageChange = (e) => {
+    const imageUrl = e.target.value;
+    setPreviewImage(imageUrl);
+    setImage(imageUrl); // Cập nhật state 'image' với URL ảnh
+  };
 
   const handleSaveNews = async () => {
     try {
@@ -22,13 +45,7 @@ function NewsModal({ isOpen, onRequestClose, onNewsAdded }) {
       console.log(result);
 
       // Vui lòng nhập đầy đủ thông tin
-      if (
-        title === "" ||
-        content === "" ||
-        image === "" ||
-        user_id === "" ||
-        topic_id === ""
-      ) {
+      if (title === "" || content === "" || user_id === "") {
         return toast.error("Vui lòng nhập đầy đủ thông tin!");
       }
 
@@ -38,12 +55,22 @@ function NewsModal({ isOpen, onRequestClose, onNewsAdded }) {
       setContent("");
       setImage("");
       setUserId("");
-      setTopicId("");
       onNewsAdded();
     } catch (e) {
       console.log(e);
     }
   };
+
+  // Lấy danh sách chủ đề
+  const [topics, setTopics] = useState([]);
+  useEffect(() => {
+    const fetchTopics = async () => {
+      const result = await AxiosInstance().get("/get-topic.php");
+      setTopics(result);
+    };
+
+    fetchTopics();
+  }, []);
 
   return (
     <Modal
@@ -73,12 +100,18 @@ function NewsModal({ isOpen, onRequestClose, onNewsAdded }) {
         </div>
         <div>
           <label htmlFor="image">Hình ảnh:</label>
-          <input
-            type="text"
-            id="image"
-            value={image}
-            onChange={(e) => setImage(e.target.value)}
-          />
+          <div className="link-anh">
+            <input
+              type="text"
+              id="image"
+              value={image}
+              onChange={handleImageChange}
+            />
+            <input type="file" accept="image/*" onChange={handleFileChange} />
+            {previewImage && (
+              <img src={previewImage} alt="Preview" className="preview-image" />
+            )}
+          </div>
         </div>
         <div>
           <label htmlFor="user_id">User ID:</label>
@@ -89,15 +122,13 @@ function NewsModal({ isOpen, onRequestClose, onNewsAdded }) {
             onChange={(e) => setUserId(e.target.value)}
           />
         </div>
-        <div>
-          <label htmlFor="topic_id">Topic ID:</label>
-          <input
-            type="number"
-            id="topic_id"
-            value={topic_id}
-            onChange={(e) => setTopicId(e.target.value)}
-          />
-        </div>
+        <select value={topic_id} onChange={(e) => setTopicId(e.target.value)}>
+          {topics.map((item, index) => (
+            <option key={index} value={item.id}>
+              {item.name}
+            </option>
+          ))}
+        </select>
       </form>
       <button className="cancel-btn" onClick={onRequestClose}>
         Hủy thêm Tin Tức

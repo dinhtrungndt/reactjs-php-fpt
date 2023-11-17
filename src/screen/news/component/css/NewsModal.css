@@ -7,20 +7,27 @@
   border: 1px solid #ccc;
   background-color: #fff;
 }
+
 form {
   margin-bottom: 20px;
+  display: flex;
+  flex-direction: column; /* Dàn trải các input theo chiều dọc */
+}
+
+.label-input-container {
+  display: flex;
+  align-items: center; /* Canh giữa các phần tử theo chiều dọc */
+  margin-bottom: 10px;
 }
 
 label {
-  display: block;
-  margin-bottom: 5px;
+  margin-right: 10px; /* Khoảng cách giữa label và input */
 }
 
 input,
 textarea {
-  width: 100%;
+  flex: 1; /* Chia sẻ không gian trong container */
   padding: 8px;
-  margin-bottom: 10px;
   box-sizing: border-box;
 }
 
@@ -38,4 +45,25 @@ button {
 .save-btn {
   background-color: #4caf50;
   color: #fff;
+}
+
+.link-anh {
+  display: flex;
+}
+
+.link-anh input {
+  height: 50px;
+  margin-top: 30px;
+  margin-bottom: 50px;
+}
+/* Thêm kiểu cho hình ảnh xem trước */
+.preview-image {
+  max-width: 100%;
+  height: auto;
+  margin-top: 10px;
+  margin-left: 10px; /* Khoảng cách giữa input và ảnh */
+  border: 1px solid #ccc;
+  padding: 5px;
+  box-sizing: border-box;
+  max-height: 100px; /* Đặt chiều cao tối đa mong muốn */
 }

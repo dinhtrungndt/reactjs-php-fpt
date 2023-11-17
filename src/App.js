@@ -14,6 +14,7 @@ import NewsScreen from "./screen/news/index.tsx";
 import LichHocScreen from "./screen/lichhoc/index.tsx";
 import BangDiemScreen from "./screen/bangdiem/bangdiem.tsx";
 import ProfileScreen from "./screen/profile/index.tsx";
+import NewsModal from "./screen/news/component/add-news.tsx";
 
 function App() {
   // đọc thông tin user từ localStorage
@@ -67,6 +68,7 @@ function App() {
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<NewsScreen />} />
             <Route path="/lichhoc" element={<LichHocScreen />} />
+            <Route path="/add" element={<NewsModal user={user} />} />
             <Route path="/bangdiem" element={<BangDiemScreen />} />
             <Route path="/profile" element={<ProfileScreen />} />
           </Route>
