@@ -8,7 +8,7 @@ import "./css/NewsModal.css";
 
 Modal.setAppElement("#root"); // Cần chỉ định một phần tử gốc cho modal
 
-function NewsModal({ isOpen, onRequestClose, onNewsAdded }) {
+function NewsModal({ isOpen, onRequestClose, onNewsAdded, userId }) {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [image, setImage] = useState("");
@@ -40,12 +40,13 @@ function NewsModal({ isOpen, onRequestClose, onNewsAdded }) {
 
   const handleSaveNews = async () => {
     try {
-      const body = { title, content, image, user_id, topic_id };
+      // Update the body object to include the user ID
+      const body = { title, content, image, user_id: userId, topic_id };
       const result = await AxiosInstance().post("/add-news.php", body);
       console.log(result);
 
       // Vui lòng nhập đầy đủ thông tin
-      if (title === "" || content === "" || user_id === "") {
+      if (title === "" || content === "" || userId === "") {
         return toast.error("Vui lòng nhập đầy đủ thông tin!");
       }
 
@@ -54,8 +55,7 @@ function NewsModal({ isOpen, onRequestClose, onNewsAdded }) {
       setTitle("");
       setContent("");
       setImage("");
-      setUserId("");
-      onNewsAdded();
+      onNewsAdded(); // Make sure onNewsAdded is a function
     } catch (e) {
       console.log(e);
     }
@@ -112,15 +112,6 @@ function NewsModal({ isOpen, onRequestClose, onNewsAdded }) {
               <img src={previewImage} alt="Preview" className="preview-image" />
             )}
           </div>
-        </div>
-        <div>
-          <label htmlFor="user_id">User ID:</label>
-          <input
-            type="number"
-            id="user_id"
-            value={user_id}
-            onChange={(e) => setUserId(e.target.value)}
-          />
         </div>
         <select value={topic_id} onChange={(e) => setTopicId(e.target.value)}>
           {topics.map((item, index) => (

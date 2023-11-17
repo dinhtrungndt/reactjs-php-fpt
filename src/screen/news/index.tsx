@@ -14,6 +14,15 @@ function NewsScreen() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isOpenUpdateModal, setIsOpenUpdateModal] = useState(false);
   const [updateModalId, setUpdateModalId] = useState(null);
+  const getUserFromLocalStorage = () => {
+    const userString = localStorage.getItem("user");
+    if (userString) {
+      return JSON.parse(userString);
+    }
+    return null;
+  };
+
+  const user = getUserFromLocalStorage();
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -68,7 +77,12 @@ function NewsScreen() {
           <button onClick={openModal} className="btn btn-primary mb-3 mx-3">
             Thêm Tin Tức
           </button>
-          <NewsModal isOpen={isModalOpen} onRequestClose={closeModal} />
+          <NewsModal
+            isOpen={isModalOpen}
+            onRequestClose={closeModal}
+            userId={user ? user.id : null}
+            onNewsAdded={() => {}}
+          />
 
           <table className="table">
             <thead>

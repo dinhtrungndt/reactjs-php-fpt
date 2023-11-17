@@ -66,9 +66,11 @@ function App() {
             />
           </Route>
           <Route element={<ProtectedRoute />}>
-            <Route path="/" element={<NewsScreen />} />
+            <Route
+              path="/"
+              element={<NewsScreen userId={user ? user.id : null} />}
+            />
             <Route path="/lichhoc" element={<LichHocScreen />} />
-            <Route path="/add" element={<NewsModal user={user} />} />
             <Route path="/bangdiem" element={<BangDiemScreen />} />
             <Route path="/profile" element={<ProfileScreen />} />
           </Route>
