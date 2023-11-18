@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Modal from "react-modal";
 import AxiosInstance from "../../../helper/AxiosInstance";
 import { ToastContainer, toast } from "react-toastify";
@@ -8,154 +8,84 @@ import "./css/AddUsers.css";
 
 Modal.setAppElement("#root"); // Cần chỉ định một phần tử gốc cho modal
 
-function AddUsers({ isOpen, onRequestClose }) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
-  const [role, setRole] = useState("");
-  const [avatar, setAvatar] = useState("");
-  const [previewImage, setPreviewImage] = useState("");
-  const [selectedImage, setSelectedImage] = useState(null);
+function AddMonHoc({ isOpen, onRequestClose, onNewsAdded }) {
+  const [tenmonhoc, setTenMonHoc] = useState("");
+  const [loaimonhoc_id, setloaiMonHoc] = useState(1);
 
-  const handleSaveUser = async () => {
+  const handleSave = async () => {
     try {
-      const emailExist = await checkEmailExist(email);
+      // Tạo đối tượng FormData chứa dữ liệu người dùng
+      const body = {
+        tenmonhoc,
+        loaimonhoc_id,
+      };
+      const result = await AxiosInstance().post("/add-monhoc.php", body);
+      console.log(result);
 
-      if (emailExist) {
-        return toast.error("Email đã tồn tại!");
-      } else if (
-        email === "" ||
-        password === "" ||
-        name === "" ||
-        role === ""
-      ) {
+      // Vui lòng nhập đầy đủ thông tin
+      if (tenmonhoc === "") {
         return toast.error("Vui lòng nhập đầy đủ thông tin!");
       }
 
-      // Tiến hành thêm người dùng nếu email chưa tồn tại
-      const body = { email, password, name, role, avatar };
-      const result = await AxiosInstance().post("/add-users.php", body);
-      console.log(result);
-
       // Kiểm tra và đóng modal nếu người dùng được thêm thành công
-      toast.success("Thêm người dùng thành công!");
+      toast.success("Thêm môn học thành công!");
 
       // Reset form
-      setEmail("");
-      setPassword("");
-      setName("");
-      setRole("");
-      setAvatar("");
+      setTenMonHoc("");
+      onNewsAdded();
     } catch (e) {
       console.log(e);
-      // Hiển thị thông báo lỗi
-      toast.error("Thêm người dùng thất bại!");
     }
   };
 
-  // Kiểm tra email đã tồn tại hay không
-  const checkEmailExist = async (email) => {
-    try {
-      const result = await AxiosInstance().get(
-        `/check-email.php?email=${email}`
-      );
-      return result.data.exists;
-    } catch (error) {
-      console.log(error);
-      return false;
-    }
-  };
+  // Lấy danh sách loại môn học
+  const [loaiMonHocs, setloaiMonHocs] = useState([]);
+  useEffect(() => {
+    const fetchLoaiMonHoc = async () => {
+      const result = await AxiosInstance().get("/get-loaimonhoc.php ");
+      setloaiMonHocs(result);
+    };
 
-  const handleFileChange = async (e) => {
-    const file = e.target.files[0];
-    const imageUrl = URL.createObjectURL(file);
-    setPreviewImage(imageUrl);
-    setSelectedImage(file);
-    const formData = new FormData();
-    formData.append("image", file);
-    const result = await AxiosInstance("multipart/form-data").post(
-      "/upload-file.php",
-      formData
-    );
-    console.log(result);
-    setAvatar(result.path);
-  };
-
-  const handleImageChange = (e) => {
-    const imageUrl = e.target.value;
-    setPreviewImage(imageUrl);
-    setAvatar(imageUrl); // Cập nhật state 'image' với URL ảnh
-  };
+    fetchLoaiMonHoc();
+  }, []);
 
   return (
     <Modal
       isOpen={isOpen}
       onRequestClose={onRequestClose}
-      contentLabel="Thêm người dùng"
+      contentLabel="Thêm môn học"
       className="custom-modal"
     >
-      <h2>Thêm người dùng</h2>
+      <h2>Thêm môn học</h2>
       <form>
         <div>
-          <label htmlFor="email">Email:</label>
+          <label htmlFor="monhoc">Tên môn học:</label>
           <input
             type="text"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            id="monhoc"
+            value={tenmonhoc}
+            onChange={(e) => setTenMonHoc(e.target.value)}
           />
         </div>
-        <div>
-          <label htmlFor="password">Password:</label>
-          <input
-            type="text"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
-        <div>
-          <label htmlFor="name">Name:</label>
-          <input
-            type="text"
-            id="name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-        </div>
-        <div>
-          <label htmlFor="role">Role:</label>
-          <input
-            type="text"
-            id="role"
-            value={role}
-            onChange={(e) => setRole(e.target.value)}
-          />
-        </div>
-        <div>
-          <label htmlFor="image">Avatar:</label>
-          <div className="link-anh">
-            <input
-              type="text"
-              id="image"
-              value={avatar}
-              onChange={handleImageChange}
-            />
-            <input type="file" accept="image/*" onChange={handleFileChange} />
-            {previewImage && (
-              <img src={previewImage} alt="Preview" className="preview-image" />
-            )}
-          </div>
-        </div>
+        <select
+          value={loaimonhoc_id}
+          onChange={(e) => setloaiMonHoc(e.target.value)}
+        >
+          {loaiMonHocs.map((item, index) => (
+            <option key={index} value={item.id}>
+              {item.tenloaimon}
+            </option>
+          ))}
+        </select>
       </form>
       <button className="cancel-btn" onClick={onRequestClose}>
-        Hủy thêm người dùng
+        Hủy thêm môn
       </button>
-      <button className="save-btn" onClick={handleSaveUser}>
-        Lưu người dùng
+      <button className="save-btn" onClick={handleSave}>
+        Lưu môn học
       </button>
     </Modal>
   );
 }
 
-export default AddUsers;
+export default AddMonHoc;

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Tabs, Tab } from "react-bootstrap";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import swal from "sweetalert";
 
 import AxiosInstance from "../../helper/AxiosInstance.js";
 import AddUsers from "./components/add.tsx";
@@ -23,6 +24,7 @@ function ProfileScreen() {
 
   const closeUpdateModal = () => {
     setIsOpenUpdateModal(false);
+    toast.error("Bạn đã hủy cập nhập!");
   };
 
   const openUpdateModal = (id) => {
@@ -32,14 +34,22 @@ function ProfileScreen() {
 
   const handleDelete = async (id) => {
     try {
-      const result = await AxiosInstance().delete(`/delete-users.php?id=${id}`);
-      console.log(result);
-
-      // Cập nhật danh sách tin tức sau khi xóa thành công
-      setNews((prevNews) => prevNews.filter((item) => item.id !== id));
-
-      // Hiển thị thông báo thành công
-      toast.error("Xóa bản tin thành công!");
+      swal({
+        title: "Bạn muốn xóa người dùng này?",
+        text: "Sau khi xóa, bạn sẽ không thể khôi phục người dùng này!",
+        icon: "warning",
+        buttons: true,
+        dangerMode: true,
+      }).then((willDelete) => {
+        if (willDelete) {
+          AxiosInstance().delete(`/delete-users.php?id=${id}`);
+          const newNews = news.filter((item) => item.id !== id);
+          setNews(newNews);
+          toast.success("Xóa người dùng thành công!");
+        } else {
+          toast.error("Bạn đã hủy xóa!");
+        }
+      });
     } catch (e) {
       console.log(e);
 

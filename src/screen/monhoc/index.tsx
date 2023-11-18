@@ -6,6 +6,8 @@ import "react-toastify/dist/ReactToastify.css";
 import AxiosInstance from "../../helper/AxiosInstance.js";
 import AddUsers from "./components/add.tsx";
 import UpdateUsers from "./components/update.tsx";
+import AddMonHoc from "./components/add.tsx";
+import swal from "sweetalert";
 
 function MonHocScreen() {
   const [news, setNews] = useState([]);
@@ -30,37 +32,53 @@ function MonHocScreen() {
     setUpdateModalId(id);
   };
 
-  useEffect(() => {
-    const fetchNews = async () => {
-      const result = await AxiosInstance().get("/get-monhoc.php");
-      setNews(result);
-    };
+  const handleDelete = async (id) => {
+    try {
+      swal({
+        title: "Bạn muốn xóa môn học này?",
+        text: "Sau khi xóa, bạn sẽ không thể khôi phục môn học này!",
+        icon: "warning",
+        buttons: true,
+        dangerMode: true,
+      }).then((willDelete) => {
+        if (willDelete) {
+          AxiosInstance().delete(`/delete-monhoc.php?id=${id}`);
+          const newNews = news.filter((item) => item.id !== id);
+          setNews(newNews);
+          toast.success("Xóa môn học thành công!");
+        } else {
+          toast.error("Bạn đã hủy xóa!");
+        }
+      });
+    } catch (e) {
+      console.log(e);
 
-    fetchNews();
-  }, []);
+      // Hiển thị thông báo lỗi
+      toast.error("Xóa bản tin thất bại!");
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [newsResult, topicsResult, usersResult] = await Promise.all([
-          AxiosInstance().get("/get-lichhoc.php"),
+        const [newsResult, topicsResult] = await Promise.all([
           AxiosInstance().get("/get-monhoc.php"),
-          AxiosInstance().get("/get-loaimonhoc.php"), // Adjust the endpoint based on your API
+          AxiosInstance().get("/get-loaimonhoc.php"), // Chỉnh sửa endpoint nếu cần
         ]);
 
         const newsWithUserData = newsResult.map((newsItem) => {
-          const loaimonhoc = usersResult.find(
-            (userItem) => userItem.id === newsItem.user_id
-          );
           const topic = topicsResult.find(
             (topicItem) => topicItem.id === newsItem.monhoc_id
           );
+          const loaimonhoc = topicsResult.find(
+            (loaimonhocItem) => loaimonhocItem.id === newsItem.loaimonhoc_id
+          );
           return {
             ...newsItem,
-            monhoc_name: topic ? topic.tenmonhoc : "Unknown Topic",
             loaimonhoc_name: loaimonhoc
               ? loaimonhoc.tenloaimon
-              : "Unknown Topic",
+              : "Unknown Type",
+            monhoc_name: topic ? topic.tenmonhoc : "Unknown Topic",
           };
         });
 
@@ -81,7 +99,11 @@ function MonHocScreen() {
           <button onClick={openModal} className="btn btn-primary mb-3 mx-3">
             Thêm môn học
           </button>
-          <AddUsers isOpen={isModalOpen} onRequestClose={closeModal} />
+          <AddMonHoc
+            isOpen={isModalOpen}
+            onRequestClose={closeModal}
+            onNewsAdded={() => {}}
+          />
 
           <table className="table">
             <thead>
@@ -95,7 +117,7 @@ function MonHocScreen() {
               {news.map((item, index) => (
                 <tr key={index}>
                   <td>{index + 1}</td>
-                  <td>{item.monhoc_name}</td>
+                  <td>{item.tenmonhoc}</td>
                   <td>{item.loaimonhoc_name}</td>
                   <button
                     className="btn btn-primary mb-1 mx-1"

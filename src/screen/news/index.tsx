@@ -5,9 +5,9 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AxiosInstance from "../../helper/AxiosInstance.js";
 import LichHocScreen from "../lichhoc/index.tsx";
-import BangDiemScreen from "../bangdiem/bangdiem.tsx";
 import ProfileScreen from "../profile/index.tsx";
 import UpdateNews from "./component/update-news.tsx";
+import swal from "sweetalert";
 
 import "./css/style.css";
 import MonHocScreen from "../monhoc/index.tsx";
@@ -34,6 +34,7 @@ function NewsScreen() {
 
   const closeModal = () => {
     setIsModalOpen(false);
+    toast.error("Bạn đã hủy thêm!");
   };
 
   const openUpdateModal = (id) => {
@@ -43,19 +44,28 @@ function NewsScreen() {
 
   const closeUpdateModal = () => {
     setIsOpenUpdateModal(false);
+    toast.error("Bạn đã hủy cập nhập!");
   };
 
   const handleDelete = async (id) => {
     try {
-      const result = await AxiosInstance().delete(`/delete-news.php?id=${id}`);
-      console.log(result);
-
-      // Cập nhật danh sách tin tức sau khi xóa thành công
-      const newNews = news.filter((item) => item.id !== id);
-      setNews(newNews);
-
-      // Hiển thị thông báo thành công
-      toast.error("Xóa bản tin thành công!");
+      swal({
+        title: "Bạn muốn xóa tin tức này?",
+        text: "Sau khi xóa, bạn sẽ không thể khôi phục tập tin tưởng tượng này!",
+        icon: "warning",
+        buttons: true,
+        dangerMode: true,
+      }).then((willDelete) => {
+        if (willDelete) {
+          AxiosInstance().delete(`/delete-news.php?id=${id}`);
+          // Cập nhật danh sách tin tức sau khi xóa thành công
+          const newNews = news.filter((item) => item.id !== id);
+          setNews(newNews);
+          toast.success("Xóa bản tin thành công!");
+        } else {
+          toast.error("Bạn đã hủy xóa!");
+        }
+      });
     } catch (e) {
       console.log(e);
 
@@ -102,6 +112,25 @@ function NewsScreen() {
     container-fluid
     "
     >
+      {/* Hiện 'Hello user' người dùng và to màu tên user */}
+      <h4 className="text-center mt-3">
+        Xin chào{" "}
+        <span className="text-danger">
+          {user ? user.email : "Unknown User"}
+        </span>
+      </h4>
+      <h1 className="text-center mt-3">Trang quản trị</h1>
+      <hr />
+      <button
+        onClick={() => {
+          localStorage.removeItem("user");
+          window.location.reload();
+        }}
+        className="btn btn-danger mb-2 mx-3 my-3"
+        style={{ position: "absolute", right: "100px", top: "10px" }}
+      >
+        Đăng xuất
+      </button>
       <Tabs id="controlled-tabs" className="mb-3 mt-4" variant="pills">
         <Tab eventKey="list" title="Tin tức">
           <h1>Danh sách tin tức</h1>
@@ -174,13 +203,11 @@ function NewsScreen() {
         <Tab eventKey="lichhoc" title="Lịch học">
           <LichHocScreen />
         </Tab>
-        <Tab eventKey="bangdiem" title="Bảng điểm">
-          <BangDiemScreen />
-        </Tab>
         <Tab eventKey="profile" title="Hồ sơ">
           <ProfileScreen />
         </Tab>
       </Tabs>
+
       <ToastContainer />
     </div>
   );

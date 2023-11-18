@@ -49,7 +49,6 @@ function NewsModal({ isOpen, onRequestClose, onNewsAdded, userId }) {
       if (title === "" || content === "" || userId === "") {
         return toast.error("Vui lòng nhập đầy đủ thông tin!");
       }
-
       toast.success("Thêm Tin Tức thành công!");
       // Reset form
       setTitle("");

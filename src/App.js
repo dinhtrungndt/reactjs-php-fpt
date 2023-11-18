@@ -12,7 +12,6 @@ import {
 import SignInScreen from "./signin/index.tsx";
 import NewsScreen from "./screen/news/index.tsx";
 import LichHocScreen from "./screen/lichhoc/index.tsx";
-import BangDiemScreen from "./screen/bangdiem/bangdiem.tsx";
 import ProfileScreen from "./screen/profile/index.tsx";
 import NewsModal from "./screen/news/component/add-news.tsx";
 
@@ -71,7 +70,6 @@ function App() {
               element={<NewsScreen userId={user ? user.id : null} />}
             />
             <Route path="/lichhoc" element={<LichHocScreen />} />
-            <Route path="/bangdiem" element={<BangDiemScreen />} />
             <Route path="/profile" element={<ProfileScreen />} />
           </Route>
         </Routes>
