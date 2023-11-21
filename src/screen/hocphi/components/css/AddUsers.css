@@ -1,0 +1,42 @@
+/* Trong NewsModal.css hoặc sử dụng styled-components */
+
+.custom-modal {
+  width: 400px;
+  margin: 0 auto;
+  margin-top: 50px;
+  padding: 20px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+}
+form {
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+input,
+textarea {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+}
+
+button {
+  padding: 10px 15px;
+  cursor: pointer;
+  margin-right: 10px; /* Khoảng cách giữa nút */
+}
+
+.cancel-btn {
+  background-color: #ccc;
+  color: #333;
+}
+
+.save-btn {
+  background-color: #4caf50;
+  color: #fff;
+}

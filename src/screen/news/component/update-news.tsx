@@ -75,9 +75,9 @@ const UpdateNews = ({ isOpen, onRequestClose, id }) => {
 
       // Display a success notification
       toast.success("Cập nhật Tin Tức thành công!");
-
-      // Close the modal
-      onRequestClose();
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     } catch (e) {
       console.error("Error updating news:", e);
     }

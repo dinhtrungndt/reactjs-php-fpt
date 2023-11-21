@@ -2,13 +2,14 @@ import React, { useEffect, useState } from "react";
 import { Tabs, Tab } from "react-bootstrap";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import swal from "sweetalert";
 
 import AxiosInstance from "../../helper/AxiosInstance.js";
 import AddUsers from "./components/add.tsx";
 import UpdateUsers from "./components/update.tsx";
+import AddMonHoc from "./components/add.tsx";
+import swal from "sweetalert";
 
-function ProfileScreen() {
+function HocPhiScreen() {
   const [news, setNews] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isOpenUpdateModal, setIsOpenUpdateModal] = useState(false);
@@ -34,17 +35,17 @@ function ProfileScreen() {
   const handleDelete = async (id) => {
     try {
       swal({
-        title: "Bạn muốn xóa người dùng này?",
-        text: "Sau khi xóa, bạn sẽ không thể khôi phục người dùng này!",
+        title: "Bạn muốn xóa môn học này?",
+        text: "Sau khi xóa, bạn sẽ không thể khôi phục môn học này!",
         icon: "warning",
         buttons: true,
         dangerMode: true,
       }).then((willDelete) => {
         if (willDelete) {
-          AxiosInstance().delete(`/delete-users.php?id=${id}`);
+          AxiosInstance().delete(`/delete-monhoc.php?id=${id}`);
           const newNews = news.filter((item) => item.id !== id);
           setNews(newNews);
-          toast.success("Xóa người dùng thành công!");
+          toast.success("Xóa môn học thành công!");
         } else {
           toast.error("Bạn đã hủy xóa!");
         }
@@ -58,51 +59,71 @@ function ProfileScreen() {
   };
 
   useEffect(() => {
-    const fetchNews = async () => {
-      const result = await AxiosInstance().get("/get-users.php");
-      setNews(result);
+    const fetchData = async () => {
+      try {
+        const [newsResult, topicsResult, usersResult] = await Promise.all([
+          AxiosInstance().get("/get-fees.php"),
+          AxiosInstance().get("/get-users.php"),
+          AxiosInstance().get("/get-students.php"),
+        ]);
+
+        const newsWithUserData = newsResult.map((newsItem) => {
+          const user = usersResult.find(
+            (userItem) => userItem.id === newsItem.student_id
+          );
+          const topic = topicsResult.find(
+            (topicItem) => topicItem.id === newsItem.user_id
+          );
+          return {
+            ...newsItem,
+            students_name: user ? user.name : "Unknown Topic",
+            user_name: topic ? topic.email : "Unknown User",
+          };
+        });
+
+        setNews(newsWithUserData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
     };
 
-    fetchNews();
+    fetchData();
   }, []);
+
   return (
     <div>
       <Tabs id="controlled-tabs" className="mb-3" variant="pills">
         <Tab eventKey="list">
-          <h1>Danh sách người dùng</h1>
+          <h1>Danh sách học phí </h1>
           <button onClick={openModal} className="btn btn-primary mb-3 mx-3">
-            Thêm người dùng
+            Thêm học phí
           </button>
-          <AddUsers isOpen={isModalOpen} onRequestClose={closeModal} />
+          <AddMonHoc
+            isOpen={isModalOpen}
+            onRequestClose={closeModal}
+            onNewsAdded={() => {}}
+          />
 
           <table className="table">
             <thead>
               <tr>
                 <th>STT</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Password</th>
-                <th>Role</th>
-                <th>Avatar</th>
+                <th>Tên học sinh</th>
+                <th>Học phí</th>
+                <th>Phí phát sinh</th>
+                <th>Ngày tạo</th>
+                <th>Người tạo</th>
               </tr>
             </thead>
             <tbody>
               {news.map((item, index) => (
                 <tr key={index}>
                   <td>{index + 1}</td>
-                  <td>{item.name}</td>
-                  <td>{item.email}</td>
-                  <td>{item.password}</td>
-                  <td>{item.role}</td>
-                  <td>
-                    {item.avatar && (
-                      <img
-                        src={item.avatar}
-                        alt={`Ảnh ${item.title}`}
-                        style={{ maxWidth: "100px", maxHeight: "100px" }}
-                      />
-                    )}
-                  </td>
+                  <td>{item.students_name}</td>
+                  <td>{item.tuition_fee}</td>
+                  <td>{item.misc_fee}</td>
+                  <td>{item.created_at}</td>
+                  <td>{item.user_name}</td>
                   <button
                     className="btn btn-primary mb-1 mx-1"
                     onClick={() => openUpdateModal(item.id)}
@@ -131,4 +152,4 @@ function ProfileScreen() {
   );
 }
 
-export default ProfileScreen;
+export default HocPhiScreen;

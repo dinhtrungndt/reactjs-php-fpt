@@ -11,12 +11,20 @@ import swal from "sweetalert";
 
 import "./css/style.css";
 import MonHocScreen from "../monhoc/index.tsx";
+import TopicScreen from "../topic/index.tsx";
+import UpdateUsers from "../profile/components/update.tsx";
+import ChartJS from "../chartjs/index.js";
+import ChartComponent from "../chartjs/index.js";
+import StudentScreen from "../students/index.tsx";
+import HocPhiScreen from "../hocphi/index.tsx";
 
 function NewsScreen() {
   const [news, setNews] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isOpenUpdateModal, setIsOpenUpdateModal] = useState(false);
   const [updateModalId, setUpdateModalId] = useState(null);
+  const [isOpenUpdateUser, setIsOpenUpdateUser] = useState(false);
+  const [updateUserModalId, setUpdateUserModalId] = useState(null);
 
   const getUserFromLocalStorage = () => {
     const userString = localStorage.getItem("user");
@@ -45,6 +53,16 @@ function NewsScreen() {
   const closeUpdateModal = () => {
     setIsOpenUpdateModal(false);
     toast.error("Bạn đã hủy cập nhập!");
+  };
+
+  const openUpdateUser = (id) => {
+    setIsOpenUpdateUser(true);
+    setUpdateUserModalId(id);
+  };
+
+  const closeUpdateUser = () => {
+    setIsOpenUpdateUser(false);
+    window.location.reload();
   };
 
   const handleDelete = async (id) => {
@@ -112,11 +130,37 @@ function NewsScreen() {
     container-fluid
     "
     >
+      {/* ảnh user */}
+      <div className="row">
+        <div className="col-12"></div>
+      </div>
       {/* Hiện 'Hello user' người dùng và to màu tên user */}
       <h4 className="text-center mt-3">
         Xin chào{" "}
-        <span className="text-danger">
+        <span
+          onClick={() => openUpdateUser(user.id)}
+          style={{ cursor: "pointer" }}
+          className="text-danger"
+        >
           {user ? user.email : "Unknown User"}
+          <img
+            src={user.avatar}
+            style={{
+              width: "50px",
+              height: "50px",
+              border: "1px solid black",
+              borderWidth: 1,
+              borderRadius: "50%",
+              marginLeft: "10px",
+            }}
+          />
+          {isOpenUpdateModal || (
+            <UpdateUsers
+              isOpen={isOpenUpdateUser}
+              onRequestClose={closeUpdateUser}
+              id={updateModalId}
+            />
+          )}
         </span>
       </h4>
       <h1 className="text-center mt-3">Trang quản trị</h1>
@@ -197,6 +241,9 @@ function NewsScreen() {
             </tbody>
           </table>
         </Tab>
+        <Tab eventKey="topic" title="Chủ đề">
+          <TopicScreen />
+        </Tab>
         <Tab eventKey="monhoc" title="Môn học">
           <MonHocScreen />
         </Tab>
@@ -205,6 +252,15 @@ function NewsScreen() {
         </Tab>
         <Tab eventKey="profile" title="Hồ sơ">
           <ProfileScreen />
+        </Tab>
+        <Tab eventKey="student" title="Học sinh">
+          <StudentScreen />
+        </Tab>
+        <Tab eventKey="hocphi" title="Học phí">
+          <HocPhiScreen />
+        </Tab>
+        <Tab eventKey="chart" title="Biểu đồ">
+          <ChartComponent />
         </Tab>
       </Tabs>
 

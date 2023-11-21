@@ -2,13 +2,12 @@ import React, { useEffect, useState } from "react";
 import { Tabs, Tab } from "react-bootstrap";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import swal from "sweetalert";
 
 import AxiosInstance from "../../helper/AxiosInstance.js";
 import AddUsers from "./components/add.tsx";
 import UpdateUsers from "./components/update.tsx";
 
-function ProfileScreen() {
+function StudentScreen() {
   const [news, setNews] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isOpenUpdateModal, setIsOpenUpdateModal] = useState(false);
@@ -31,47 +30,45 @@ function ProfileScreen() {
     setUpdateModalId(id);
   };
 
-  const handleDelete = async (id) => {
-    try {
-      swal({
-        title: "Bạn muốn xóa người dùng này?",
-        text: "Sau khi xóa, bạn sẽ không thể khôi phục người dùng này!",
-        icon: "warning",
-        buttons: true,
-        dangerMode: true,
-      }).then((willDelete) => {
-        if (willDelete) {
-          AxiosInstance().delete(`/delete-users.php?id=${id}`);
-          const newNews = news.filter((item) => item.id !== id);
-          setNews(newNews);
-          toast.success("Xóa người dùng thành công!");
-        } else {
-          toast.error("Bạn đã hủy xóa!");
-        }
-      });
-    } catch (e) {
-      console.log(e);
-
-      // Hiển thị thông báo lỗi
-      toast.error("Xóa bản tin thất bại!");
-    }
-  };
-
   useEffect(() => {
-    const fetchNews = async () => {
-      const result = await AxiosInstance().get("/get-users.php");
-      setNews(result);
+    const fetchData = async () => {
+      try {
+        const [newsResult, topicsResult, usersResult] = await Promise.all([
+          AxiosInstance().get("/get-students.php"),
+          AxiosInstance().get("/get-fees.php"),
+          AxiosInstance().get("/get-users.php"),
+        ]);
+
+        const newsWithUserData = newsResult.map((newsItem) => {
+          const user = usersResult.find(
+            (userItem) => userItem.id === newsItem.user_id
+          );
+          const topic = topicsResult.find(
+            (topicItem) => topicItem.id === newsItem.fees_id
+          );
+          return {
+            ...newsItem,
+            fees_name: topic ? topic.tuition_fee : "Unknown Topic",
+            user_name: user ? user.name : "Unknown User",
+          };
+        });
+
+        setNews(newsWithUserData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
     };
 
-    fetchNews();
+    fetchData();
   }, []);
+
   return (
     <div>
       <Tabs id="controlled-tabs" className="mb-3" variant="pills">
         <Tab eventKey="list">
-          <h1>Danh sách người dùng</h1>
+          <h1>Danh sách học sinh </h1>
           <button onClick={openModal} className="btn btn-primary mb-3 mx-3">
-            Thêm người dùng
+            Thêm học sinh
           </button>
           <AddUsers isOpen={isModalOpen} onRequestClose={closeModal} />
 
@@ -79,11 +76,12 @@ function ProfileScreen() {
             <thead>
               <tr>
                 <th>STT</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Password</th>
-                <th>Role</th>
+                <th>Tên học sinh</th>
+                <th>Tuổi</th>
+                <th>SBD</th>
                 <th>Avatar</th>
+                <th>Phí</th>
+                <th>Người thêm</th>
               </tr>
             </thead>
             <tbody>
@@ -91,10 +89,10 @@ function ProfileScreen() {
                 <tr key={index}>
                   <td>{index + 1}</td>
                   <td>{item.name}</td>
-                  <td>{item.email}</td>
-                  <td>{item.password}</td>
-                  <td>{item.role}</td>
+                  <td>{item.age}</td>
+                  <td>{item.sbd}</td>
                   <td>
+                    {" "}
                     {item.avatar && (
                       <img
                         src={item.avatar}
@@ -103,6 +101,8 @@ function ProfileScreen() {
                       />
                     )}
                   </td>
+                  <td>{item.fees_name}</td>
+                  <td>{item.user_name}</td>
                   <button
                     className="btn btn-primary mb-1 mx-1"
                     onClick={() => openUpdateModal(item.id)}
@@ -131,4 +131,4 @@ function ProfileScreen() {
   );
 }
 
-export default ProfileScreen;
+export default StudentScreen;
