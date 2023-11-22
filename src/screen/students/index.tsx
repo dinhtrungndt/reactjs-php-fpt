@@ -12,6 +12,8 @@ function StudentScreen() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isOpenUpdateModal, setIsOpenUpdateModal] = useState(false);
   const [updateModalId, setUpdateModalId] = useState(null);
+  const [searchKeyword, setSearchKeyword] = useState(""); // Step 1
+  const [filteredNews, setFilteredNews] = useState([]);
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -28,6 +30,10 @@ function StudentScreen() {
   const openUpdateModal = (id) => {
     setIsOpenUpdateModal(true);
     setUpdateModalId(id);
+  };
+
+  const handleInputChange = (e) => {
+    setSearchKeyword(e.target.value);
   };
 
   useEffect(() => {
@@ -62,11 +68,32 @@ function StudentScreen() {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    setFilteredNews(
+      news.filter(
+        (item) =>
+          item.name.toLowerCase().includes(searchKeyword.toLowerCase()) ||
+          item.sbd.toLowerCase().includes(searchKeyword.toLowerCase())
+      )
+    );
+  }, [searchKeyword, news]);
+
   return (
     <div>
       <Tabs id="controlled-tabs" className="mb-3" variant="pills">
         <Tab eventKey="list">
           <h1>Danh sách học sinh </h1>
+          <div className="row">
+            <div className="col-12" style={{ marginBottom: 20 }}>
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Tìm kiếm theo tên"
+                value={searchKeyword}
+                onChange={handleInputChange}
+              />
+            </div>
+          </div>
           <button onClick={openModal} className="btn btn-primary mb-3 mx-3">
             Thêm học sinh
           </button>
@@ -85,7 +112,7 @@ function StudentScreen() {
               </tr>
             </thead>
             <tbody>
-              {news.map((item, index) => (
+              {filteredNews.map((item, index) => (
                 <tr key={index}>
                   <td>{index + 1}</td>
                   <td>{item.name}</td>

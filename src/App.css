@@ -1,14 +1,87 @@
-.nav-pills .nav-link{
-    border-radius: 0;
-    color: black;
-    background-color: #dddddd;
+* {
+  margin: 0;
+  padding: 0;
+  t4ext-decoration: none;
+}
+.container {
+  display: flex;
+  position: relative; /* Ensure relative positioning */
 }
 
-.nav-pills .nav-item:not(:nth-last-child(1)) .nav-link{
-    border-right: 1px solid white;
+main {
+  flex: 1; /* Use remaining space */
+  padding: 20px;
 }
 
-.tab-content{
-    background-color: #f9fafb;
-    border: 1px solid #dddddd;
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  background: #093d79;
+  color: #fff;
+  transition: all 0.5s;
+  z-index: 1000; /* Ensure the sidebar is on top of other content */
+}
+
+/* Adjust margin for main content to accommodate the sidebar */
+main {
+  margin-left: 200px; /* Adjust this value based on your sidebar width */
+}
+
+.top_section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 15px;
+}
+
+.logo {
+  font-size: 25px;
+}
+
+.bars {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 1001;
+  transition: left 0.5s;
+}
+
+.link {
+  color: #fff;
+  display: flex;
+  padding: 10px 15px;
+  gap: 15px;
+  transition: all 0.5s;
+}
+
+.link:hover {
+  background: rgb(255, 255, 255);
+  color: #ff9100;
+  transition: all 0.5s;
+}
+
+.active {
+  color: #ff9100;
+}
+
+.icon,
+.link_text {
+  font-size: 20px;
+}
+
+.nav-pills .nav-link {
+  border-radius: 0;
+  color: black;
+  background-color: #dddddd;
+}
+
+.nav-pills .nav-item:not(:nth-last-child(1)) .nav-link {
+  border-right: 1px solid white;
+}
+
+.tab-content {
+  background-color: #f9fafb;
+  border: 1px solid #dddddd;
 }

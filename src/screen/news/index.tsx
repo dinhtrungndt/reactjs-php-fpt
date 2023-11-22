@@ -25,6 +25,8 @@ function NewsScreen() {
   const [updateModalId, setUpdateModalId] = useState(null);
   const [isOpenUpdateUser, setIsOpenUpdateUser] = useState(false);
   const [updateUserModalId, setUpdateUserModalId] = useState(null);
+  const [searchKeyword, setSearchKeyword] = useState(""); // Step 1
+  const [filteredNews, setFilteredNews] = useState([]);
 
   const getUserFromLocalStorage = () => {
     const userString = localStorage.getItem("user");
@@ -92,13 +94,28 @@ function NewsScreen() {
     }
   };
 
+  const handleSearch = async () => {
+    try {
+      const response = await AxiosInstance().get(
+        `/search-news.php?keyword=${searchKeyword}`
+      );
+      setFilteredNews(response.data); // Step 2
+    } catch (error) {
+      console.error("Error searching news:", error);
+    }
+  };
+
+  const handleInputChange = (e) => {
+    setSearchKeyword(e.target.value);
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const [newsResult, topicsResult, usersResult] = await Promise.all([
           AxiosInstance().get("/get-news.php"),
           AxiosInstance().get("/get-topic.php"),
-          AxiosInstance().get("/get-users.php"), // Adjust the endpoint based on your API
+          AxiosInstance().get("/get-users.php"),
         ]);
 
         const newsWithUserData = newsResult.map((newsItem) => {
@@ -123,6 +140,16 @@ function NewsScreen() {
 
     fetchData();
   }, []);
+
+  useEffect(() => {
+    setFilteredNews(
+      news.filter(
+        (item) =>
+          item.title.toLowerCase().includes(searchKeyword.toLowerCase()) ||
+          item.content.toLowerCase().includes(searchKeyword.toLowerCase())
+      )
+    );
+  }, [searchKeyword, news]);
 
   return (
     <div
@@ -178,6 +205,17 @@ function NewsScreen() {
       <Tabs id="controlled-tabs" className="mb-3 mt-4" variant="pills">
         <Tab eventKey="list" title="Tin tức">
           <h1>Danh sách tin tức</h1>
+          <div className="row">
+            <div className="col-12" style={{ marginBottom: 20 }}>
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Tìm kiếm theo tên"
+                value={searchKeyword}
+                onChange={handleInputChange}
+              />
+            </div>
+          </div>
           <button onClick={openModal} className="btn btn-primary mb-3 mx-3">
             Thêm Tin Tức
           </button>
@@ -201,7 +239,7 @@ function NewsScreen() {
               </tr>
             </thead>
             <tbody>
-              {news.map((item, index) => (
+              {filteredNews.map((item, index) => (
                 <tr key={index}>
                   <td>{index + 1}</td>
                   <td>{item.title}</td>

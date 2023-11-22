@@ -16,6 +16,8 @@ function TopicScreen() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isOpenUpdateModal, setIsOpenUpdateModal] = useState(false);
   const [updateModalId, setUpdateModalId] = useState(null);
+  const [searchKeyword, setSearchKeyword] = useState(""); // Step 1
+  const [filteredNews, setFilteredNews] = useState([]);
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -33,6 +35,21 @@ function TopicScreen() {
   const openUpdateModal = (id) => {
     setIsOpenUpdateModal(true);
     setUpdateModalId(id);
+  };
+
+  const handleSearch = async () => {
+    try {
+      const response = await AxiosInstance().get(
+        `/search-news.php?keyword=${searchKeyword}`
+      );
+      setFilteredNews(response.data); // Step 2
+    } catch (error) {
+      console.error("Error searching news:", error);
+    }
+  };
+
+  const handleInputChange = (e) => {
+    setSearchKeyword(e.target.value);
   };
 
   const handleDelete = async (id) => {
@@ -69,6 +86,16 @@ function TopicScreen() {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    setFilteredNews(
+      news.filter(
+        (item) =>
+          item.name.toLowerCase().includes(searchKeyword.toLowerCase()) ||
+          item.description.toLowerCase().includes(searchKeyword.toLowerCase())
+      )
+    );
+  }, [searchKeyword, news]);
+
   return (
     <div>
       <Tabs id="controlled-tabs" className="mb-3" variant="pills">
@@ -82,7 +109,17 @@ function TopicScreen() {
             onRequestClose={closeModal}
             onNewsAdded={() => {}}
           />
-
+          <div className="row">
+            <div className="col-12" style={{ marginBottom: 20 }}>
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Tìm kiếm theo tên"
+                value={searchKeyword}
+                onChange={handleInputChange}
+              />
+            </div>
+          </div>
           <table className="table">
             <thead>
               <tr>
@@ -92,7 +129,7 @@ function TopicScreen() {
               </tr>
             </thead>
             <tbody>
-              {news.map((item, index) => (
+              {filteredNews.map((item, index) => (
                 <tr key={index}>
                   <td>{index + 1}</td>
                   <td>{item.name}</td>

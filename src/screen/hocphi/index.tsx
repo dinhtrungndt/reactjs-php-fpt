@@ -14,6 +14,8 @@ function HocPhiScreen() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isOpenUpdateModal, setIsOpenUpdateModal] = useState(false);
   const [updateModalId, setUpdateModalId] = useState(null);
+  const [searchKeyword, setSearchKeyword] = useState(""); // Step 1
+  const [filteredNews, setFilteredNews] = useState([]);
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -90,11 +92,38 @@ function HocPhiScreen() {
     fetchData();
   }, []);
 
+  const handleInputChange = (e) => {
+    setSearchKeyword(e.target.value);
+  };
+
+  useEffect(() => {
+    setFilteredNews(
+      news.filter(
+        (item) =>
+          item.students_name
+            .toLowerCase()
+            .includes(searchKeyword.toLowerCase()) ||
+          item.user_name.toLowerCase().includes(searchKeyword.toLowerCase())
+      )
+    );
+  }, [searchKeyword, news]);
+
   return (
     <div>
       <Tabs id="controlled-tabs" className="mb-3" variant="pills">
         <Tab eventKey="list">
           <h1>Danh sách học phí </h1>
+          <div className="row">
+            <div className="col-12" style={{ marginBottom: 20 }}>
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Tìm kiếm theo tên"
+                value={searchKeyword}
+                onChange={handleInputChange}
+              />
+            </div>
+          </div>
           <button onClick={openModal} className="btn btn-primary mb-3 mx-3">
             Thêm học phí
           </button>
@@ -116,7 +145,7 @@ function HocPhiScreen() {
               </tr>
             </thead>
             <tbody>
-              {news.map((item, index) => (
+              {filteredNews.map((item, index) => (
                 <tr key={index}>
                   <td>{index + 1}</td>
                   <td>{item.students_name}</td>

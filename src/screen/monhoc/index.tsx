@@ -14,6 +14,8 @@ function MonHocScreen() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isOpenUpdateModal, setIsOpenUpdateModal] = useState(false);
   const [updateModalId, setUpdateModalId] = useState(null);
+  const [searchKeyword, setSearchKeyword] = useState(""); // Step 1
+  const [filteredNews, setFilteredNews] = useState([]);
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -58,6 +60,21 @@ function MonHocScreen() {
     }
   };
 
+  const handleSearch = async () => {
+    try {
+      const response = await AxiosInstance().get(
+        `/search-news.php?keyword=${searchKeyword}`
+      );
+      setFilteredNews(response.data); // Step 2
+    } catch (error) {
+      console.error("Error searching news:", error);
+    }
+  };
+
+  const handleInputChange = (e) => {
+    setSearchKeyword(e.target.value);
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -91,11 +108,34 @@ function MonHocScreen() {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    setFilteredNews(
+      news.filter(
+        (item) =>
+          item.tenmonhoc.toLowerCase().includes(searchKeyword.toLowerCase()) ||
+          item.loaimonhoc_name
+            .toLowerCase()
+            .includes(searchKeyword.toLowerCase())
+      )
+    );
+  }, [searchKeyword, news]);
+
   return (
     <div>
       <Tabs id="controlled-tabs" className="mb-3" variant="pills">
         <Tab eventKey="list">
           <h1>Danh sách môn học </h1>
+          <div className="row">
+            <div className="col-12" style={{ marginBottom: 20 }}>
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Tìm kiếm theo tên"
+                value={searchKeyword}
+                onChange={handleInputChange}
+              />
+            </div>
+          </div>
           <button onClick={openModal} className="btn btn-primary mb-3 mx-3">
             Thêm môn học
           </button>
@@ -114,7 +154,7 @@ function MonHocScreen() {
               </tr>
             </thead>
             <tbody>
-              {news.map((item, index) => (
+              {filteredNews.map((item, index) => (
                 <tr key={index}>
                   <td>{index + 1}</td>
                   <td>{item.tenmonhoc}</td>
