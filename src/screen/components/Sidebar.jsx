@@ -160,28 +160,30 @@ const Sidebar = ({ children }) => {
             onClick={toggleMenu}
           />
         ) : (
-          <FaBars
-            style={{
-              color: "#0b5ed7",
-              fontSize: "20px",
-              transition: "all 0.5s ease",
-              cursor: "pointer",
-            }}
-            onClick={toggleMenu}
-          />
+          <>
+            <FaBars
+              style={{
+                color: "#0b5ed7",
+                fontSize: "20px",
+                transition: "all 0.5s ease",
+                cursor: "pointer",
+              }}
+              onClick={toggleMenu}
+            />
+            <text
+              style={{
+                color: "#0b5ed7",
+                fontSize: "28px",
+                fontWeight: "bold",
+                marginLeft: "30px",
+                transition: "all 0.5s ease",
+                marginTop: "-12px",
+              }}
+            >
+              Danh mục
+            </text>
+          </>
         )}
-        <text
-          style={{
-            color: "#0b5ed7",
-            fontSize: "28px",
-            fontWeight: "bold",
-            marginLeft: "30px",
-            transition: "all 0.5s ease",
-            marginTop: "-12px",
-          }}
-        >
-          Danh mục
-        </text>
       </div>
       <main>{children}</main>
     </div>

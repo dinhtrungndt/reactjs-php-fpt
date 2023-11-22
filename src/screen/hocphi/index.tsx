@@ -8,6 +8,8 @@ import AddUsers from "./components/add.tsx";
 import UpdateUsers from "./components/update.tsx";
 import AddMonHoc from "./components/add.tsx";
 import swal from "sweetalert";
+import { FaSortUp, FaSortDown } from "react-icons/fa";
+import "./style.css";
 
 function HocPhiScreen() {
   const [news, setNews] = useState([]);
@@ -16,6 +18,7 @@ function HocPhiScreen() {
   const [updateModalId, setUpdateModalId] = useState(null);
   const [searchKeyword, setSearchKeyword] = useState(""); // Step 1
   const [filteredNews, setFilteredNews] = useState([]);
+  const [sortOrder, setSortOrder] = useState("asc"); // "asc" or "desc"
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -108,6 +111,22 @@ function HocPhiScreen() {
     );
   }, [searchKeyword, news]);
 
+  const handleSort = () => {
+    const sortedNews = [...filteredNews].sort((a, b) => {
+      const tuitionA = parseFloat(a.tuition_fee);
+      const tuitionB = parseFloat(b.tuition_fee);
+
+      if (sortOrder === "asc") {
+        return tuitionA - tuitionB;
+      } else {
+        return tuitionB - tuitionA;
+      }
+    });
+
+    setFilteredNews(sortedNews);
+    setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+  };
+
   return (
     <div>
       <Tabs id="controlled-tabs" className="mb-3" variant="pills">
@@ -126,6 +145,20 @@ function HocPhiScreen() {
           </div>
           <button onClick={openModal} className="btn btn-primary mb-3 mx-3">
             Thêm học phí
+          </button>
+          <button
+            onClick={handleSort}
+            className="btn btn-secondary"
+            style={{
+              backgroundColor: "#fff",
+              color: "#000",
+              borderColor: "#000",
+              marginTop: -15,
+              transition: "background-color 0.3s",
+              cursor: "pointer",
+            }}
+          >
+            {sortOrder === "asc" ? <FaSortUp /> : <FaSortDown />}
           </button>
           <AddMonHoc
             isOpen={isModalOpen}

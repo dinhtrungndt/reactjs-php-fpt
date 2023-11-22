@@ -85,3 +85,28 @@ main {
   background-color: #f9fafb;
   border: 1px solid #dddddd;
 }
+
+.link {
+  color: #fff;
+  display: flex;
+  padding: 10px 15px;
+  gap: 15px;
+  transition: all 0.5s;
+  text-decoration: none; /* Remove underline */
+}
+
+.link:hover {
+  background: rgb(255, 255, 255);
+  color: #ff9100;
+  transition: all 0.5s;
+}
+
+.active {
+  color: #ff9100;
+}
+
+.icon,
+.link_text {
+  font-size: 20px;
+  text-decoration: none; /* Remove underline */
+}
