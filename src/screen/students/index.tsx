@@ -49,17 +49,39 @@ function StudentScreen() {
           const user = usersResult.find(
             (userItem) => userItem.id === newsItem.user_id
           );
-          const topic = topicsResult.find(
-            (topicItem) => topicItem.id === newsItem.fees_id
+
+          const feesForStudent = topicsResult.filter(
+            (feeItem) => feeItem.student_id === newsItem.id
+          );
+
+          const topic = feesForStudent.reduce(
+            (total, fee) =>
+              total + parseFloat(fee.tuition_fee) + parseFloat(fee.misc_fee),
+            0
           );
           return {
             ...newsItem,
-            fees_name: topic ? topic.tuition_fee : "Unknown Topic",
-            user_name: user ? user.name : "Unknown User",
+            fees_name: topic.toFixed(2),
+            user_email: user ? user.email : "Unknown User",
           };
         });
 
-        setNews(newsWithUserData);
+        // Calculate total fees for each student
+        const newsWithTotalFees = newsWithUserData.map((student) => {
+          const feesForStudent = newsWithUserData.filter(
+            (item) => item.user_id === student.user_id
+          );
+          const totalFees = feesForStudent.reduce(
+            (total, fee) => total + parseFloat(fee.fees_name),
+            0
+          );
+          return {
+            ...student,
+            total_fees: totalFees.toFixed(2),
+          };
+        });
+
+        setNews(newsWithTotalFees);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -129,7 +151,7 @@ function StudentScreen() {
                     )}
                   </td>
                   <td>{item.fees_name}</td>
-                  <td>{item.user_name}</td>
+                  <td>{item.user_email}</td>
                   <button
                     className="btn btn-primary mb-1 mx-1"
                     onClick={() => openUpdateModal(item.id)}
