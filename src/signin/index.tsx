@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Button from "react-bootstrap/Button";
-import { Container, Row, Col, Form, InputGroup } from "react-bootstrap";
+import { Container, Row, Col, Form, InputGroup, Modal } from "react-bootstrap";
 import "./style.css";
 import AxiosInstance from "../helper/AxiosInstance.js";
+import ForgotPassword from "./forgot/index.tsx";
 
 function SignInScreen(props) {
   const [email, setEmail] = useState("");
@@ -12,7 +13,16 @@ function SignInScreen(props) {
   const [isPasswordInvalid, setIsPasswordInvalid] = useState(false);
   const [loading, setLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const { saveUser } = props;
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
 
   const Login = async () => {
     try {
@@ -125,14 +135,43 @@ function SignInScreen(props) {
                 Please enter your password.
               </Form.Control.Feedback>
             </Form.Group>
-            <Form.Group className="mb-3" controlId="rememberMe">
-              <Form.Check
-                type="checkbox"
-                label="Remember me"
-                checked={rememberMe}
-                onChange={handleRememberMeChange}
-              />
-            </Form.Group>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                marginBottom: 10,
+              }}
+            >
+              <Form.Group className="mb-3" controlId="rememberMe">
+                <Form.Check
+                  type="checkbox"
+                  label="Remember me"
+                  checked={rememberMe}
+                  onChange={handleRememberMeChange}
+                />
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="forgotPassword">
+                <a
+                  onClick={openModal}
+                  href="#"
+                  style={{ textDecoration: "none", fontSize: 16 }}
+                >
+                  Forgot password?
+                </a>
+                <Modal show={isModalOpen} onHide={closeModal}>
+                  <Modal.Header closeButton>
+                    <Modal.Title>Forgot Password</Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>
+                    <ForgotPassword
+                      isOpen={isModalOpen}
+                      onRequestClose={closeModal}
+                      onNewsAdded={() => {}}
+                    />
+                  </Modal.Body>
+                </Modal>
+              </Form.Group>
+            </div>
             <Button onClick={Login} className="custom-button" type="submit">
               {loading ? "Loading..." : "Login"}
             </Button>

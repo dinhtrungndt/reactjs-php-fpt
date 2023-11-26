@@ -20,6 +20,8 @@ import MonHocScreen from "./screen/monhoc/index.tsx";
 import StudentScreen from "./screen/students/index.tsx";
 import HocPhiScreen from "./screen/hocphi/index.tsx";
 import ChartComponent from "./screen/chartjs/index.js";
+import ForgotPassword from "./signin/forgot/index.tsx";
+import ResetPassword from "./signin/forgot/reset-password.js";
 
 function App() {
   // đọc thông tin user từ localStorage
@@ -65,17 +67,20 @@ function App() {
       <Router>
         <Sidebar>
           <Routes>
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route element={<PublicRoute />}>
               <Route
                 path="/signin"
                 element={<SignInScreen saveUser={saveUserToLocalStorage} />}
               />
             </Route>
+            <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route element={<ProtectedRoute />}>
               <Route
                 path="/"
                 element={<NewsScreen userId={user ? user.id : null} />}
               />
+              <Route path="/add" element={<NewsModal user={user} />} />
               <Route path="/chude" element={<TopicScreen />} />
               <Route path="/monhoc" element={<MonHocScreen />} />
               <Route path="/lichhoc" element={<LichHocScreen />} />
