@@ -1,30 +1,38 @@
 import React, { useState, useEffect } from "react";
 import Modal from "react-modal";
 import AxiosInstance from "../../../helper/AxiosInstance";
+import { Container, Row, Col, Form, InputGroup } from "react-bootstrap";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import "./css/AddUsers.css";
 
 Modal.setAppElement("#root"); // Cần chỉ định một phần tử gốc cho modal
-
 function AddHocPhi({ isOpen, onRequestClose, onNewsAdded, userId }) {
-  const [student_id, setStudentId] = useState(1);
+  const [selectAll, setSelectAll] = useState(false);
   const [tuition_fee, setTuitionFee] = useState("");
   const [misc_fee, setMiscFee] = useState("");
+  const [selectedStudents, setSelectedStudents] = useState([]); // Use an array to track selected students
   const [user_id, setUserId] = useState("");
 
   const handleSave = async () => {
     try {
-      // Tạo đối tượng FormData chứa dữ liệu người dùng
-      const body = {
-        student_id,
-        tuition_fee,
-        misc_fee,
-        user_id: userId,
-      };
-      const result = await AxiosInstance().post("/add-hocphi.php", body);
-      console.log(result);
+      // Check if "Select All" is checked
+      const selectedIds = selectAll
+        ? students.map((student) => student.id)
+        : selectedStudents;
+
+      // Loop through selected students and add fees for each of them
+      selectedIds.forEach(async (studentId) => {
+        const body = {
+          student_id: studentId,
+          tuition_fee,
+          misc_fee,
+          user_id: userId,
+        };
+        const result = await AxiosInstance().post("/add-hocphi.php", body);
+        console.log(result);
+      });
 
       // Vui lòng nhập đầy đủ thông tin
       if (tuition_fee === "" || misc_fee === "") {
@@ -37,6 +45,8 @@ function AddHocPhi({ isOpen, onRequestClose, onNewsAdded, userId }) {
       // Reset form
       setTuitionFee("");
       setMiscFee("");
+      setSelectAll(false); // Reset "Select All" checkbox
+      setSelectedStudents([]); // Reset selected students
       onNewsAdded();
     } catch (e) {
       console.log(e);
@@ -65,16 +75,39 @@ function AddHocPhi({ isOpen, onRequestClose, onNewsAdded, userId }) {
       <form>
         <div>
           <label htmlFor="hocsinh">Tên học sinh:</label>
-          <select
-            value={student_id}
-            onChange={(e) => setStudentId(e.target.value)}
+          {/* Chọn tất cả học sinh */}
+          <Form.Group
+            className="mb-3"
+            controlId="selectAll"
+            style={{ marginTop: 10 }}
           >
-            {students.map((item, index) => (
-              <option key={index} value={item.id}>
-                {item.name}
-              </option>
-            ))}
-          </select>
+            <Form.Check
+              type="checkbox"
+              label="Chọn tất cả học sinh"
+              checked={selectAll}
+              onChange={() => setSelectAll(!selectAll)}
+            />
+          </Form.Group>
+          {/* Use a select dropdown for the list of students */}
+          <Form.Group controlId="selectStudents">
+            <Form.Control
+              as="select"
+              multiple
+              disabled={selectAll} // Disable the dropdown if "Select All" is checked
+              value={selectedStudents}
+              onChange={(e) =>
+                setSelectedStudents(
+                  Array.from(e.target.selectedOptions, (option) => option.value)
+                )
+              }
+            >
+              {students.map((item) => (
+                <option key={item.id} value={item.id}>
+                  {item.name}
+                </option>
+              ))}
+            </Form.Control>
+          </Form.Group>
         </div>
         <div>
           <label htmlFor="hocphi">Học phí:</label>
