@@ -6,10 +6,10 @@ import "react-toastify/dist/ReactToastify.css";
 import AxiosInstance from "../../helper/AxiosInstance.js";
 import AddUsers from "./components/add.tsx";
 import UpdateUsers from "./components/update.tsx";
-import AddMonHoc from "./components/add.tsx";
 import swal from "sweetalert";
 import { FaSortUp, FaSortDown } from "react-icons/fa";
 import "./style.css";
+import AddHocPhi from "./components/add.tsx";
 
 function HocPhiScreen() {
   const [news, setNews] = useState([]);
@@ -19,6 +19,16 @@ function HocPhiScreen() {
   const [searchKeyword, setSearchKeyword] = useState(""); // Step 1
   const [filteredNews, setFilteredNews] = useState([]);
   const [sortOrder, setSortOrder] = useState("asc"); // "asc" or "desc"
+
+  const getUserFromLocalStorage = () => {
+    const userString = localStorage.getItem("user");
+    if (userString) {
+      return JSON.parse(userString);
+    }
+    return null;
+  };
+
+  const user = getUserFromLocalStorage();
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -47,7 +57,7 @@ function HocPhiScreen() {
         dangerMode: true,
       }).then((willDelete) => {
         if (willDelete) {
-          AxiosInstance().delete(`/delete-monhoc.php?id=${id}`);
+          AxiosInstance().delete(`/delete-hocphi.php?id=${id}`);
           const newNews = news.filter((item) => item.id !== id);
           setNews(newNews);
           toast.success("Xóa môn học thành công!");
@@ -160,9 +170,10 @@ function HocPhiScreen() {
           >
             {sortOrder === "asc" ? <FaSortUp /> : <FaSortDown />}
           </button>
-          <AddMonHoc
+          <AddHocPhi
             isOpen={isModalOpen}
             onRequestClose={closeModal}
+            userId={user ? user.id : null}
             onNewsAdded={() => {}}
           />
 

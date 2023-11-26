@@ -86,7 +86,10 @@ function App() {
               <Route path="/lichhoc" element={<LichHocScreen />} />
               <Route path="/profile" element={<ProfileScreen />} />
               <Route path="/student" element={<StudentScreen />} />
-              <Route path="/hocphi" element={<HocPhiScreen />} />
+              <Route
+                path="/hocphi"
+                element={<HocPhiScreen userId={user ? user.id : null} />}
+              />
               <Route path="/chartjss" element={<ChartComponent />} />
             </Route>
           </Routes>
