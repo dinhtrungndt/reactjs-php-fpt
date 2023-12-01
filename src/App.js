@@ -23,6 +23,8 @@ import ChartComponent from "./screen/chartjs/index.js";
 import ForgotPassword from "./signin/forgot/index.tsx";
 import ResetPassword from "./signin/forgot/reset-password.js";
 import MeNewsScreen from "./screen/profile/me_news.tsx";
+import UpdateUsers from "./screen/profile/components/update.tsx";
+import CaNhanScreen from "./screen/profile/caNhan.tsx";
 
 function App() {
   // đọc thông tin user từ localStorage
@@ -89,6 +91,10 @@ function App() {
                 {/* ... (existing code) */}
                 <Route path="/profile" element={<ProfileScreen />} />
                 <Route path="/profile/menews" element={<MeNewsScreen />} />
+                <Route
+                  path="/profile/caNhan"
+                  element={<CaNhanScreen user={user} />}
+                />
               </Route>
               <Route path="/student" element={<StudentScreen />} />
               <Route

@@ -81,7 +81,10 @@ const Sidebar = ({ children }) => {
             to="/profile"
             style={{ paddingLeft: 20 }}
           >
-            Profile
+            Tài khoản
+          </NavDropdown.Item>
+          <NavDropdown.Item as={NavLink} to="/profile/caNhan">
+            Thông tin cá nhân
           </NavDropdown.Item>
           <NavDropdown.Item as={NavLink} to="/profile/menews">
             Bài viết của tôi
