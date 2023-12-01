@@ -1,0 +1,27 @@
+/* Sidebar.css */
+.container {
+  display: flex;
+}
+
+.logo {
+  color: white;
+  margin: 10px;
+}
+
+.bars {
+  cursor: pointer;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  text-decoration: none;
+  color: white;
+}
+
+.nav-link span {
+  margin-left: 10px;
+}
+
+/* Add more styles as needed */

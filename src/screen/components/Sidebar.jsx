@@ -19,6 +19,9 @@ import { CgProfile } from "react-icons/cg";
 import { MdAccountCircle, MdTopic, MdAttachMoney } from "react-icons/md";
 import { PiStudentDuotone } from "react-icons/pi";
 import { GiBookStorm } from "react-icons/gi";
+import { IoNewspaper } from "react-icons/io5";
+
+import { Navbar, Nav, NavDropdown } from "react-bootstrap";
 
 const Sidebar = ({ children }) => {
   const [isMenuOpen, setMenuOpen] = useState(false);
@@ -71,7 +74,20 @@ const Sidebar = ({ children }) => {
     },
     {
       name: "Hồ sơ",
-      icon: <MdAccountCircle />,
+      icon: (
+        <NavDropdown title="" id="basic-nav-dropdown">
+          <NavDropdown.Item
+            as={NavLink}
+            to="/profile"
+            style={{ paddingLeft: 20 }}
+          >
+            Profile
+          </NavDropdown.Item>
+          <NavDropdown.Item as={NavLink} to="/profile/menews">
+            Bài viết của tôi
+          </NavDropdown.Item>
+        </NavDropdown>
+      ),
       path: "/profile",
     },
     {

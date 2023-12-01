@@ -22,6 +22,7 @@ import HocPhiScreen from "./screen/hocphi/index.tsx";
 import ChartComponent from "./screen/chartjs/index.js";
 import ForgotPassword from "./signin/forgot/index.tsx";
 import ResetPassword from "./signin/forgot/reset-password.js";
+import MeNewsScreen from "./screen/profile/me_news.tsx";
 
 function App() {
   // đọc thông tin user từ localStorage
@@ -84,7 +85,11 @@ function App() {
               <Route path="/chude" element={<TopicScreen />} />
               <Route path="/monhoc" element={<MonHocScreen />} />
               <Route path="/lichhoc" element={<LichHocScreen />} />
-              <Route path="/profile" element={<ProfileScreen />} />
+              <Route element={<ProtectedRoute />}>
+                {/* ... (existing code) */}
+                <Route path="/profile" element={<ProfileScreen />} />
+                <Route path="/profile/menews" element={<MeNewsScreen />} />
+              </Route>
               <Route path="/student" element={<StudentScreen />} />
               <Route
                 path="/hocphi"
