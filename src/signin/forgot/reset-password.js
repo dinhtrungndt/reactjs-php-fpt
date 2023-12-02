@@ -42,6 +42,9 @@ const ResetPassword = (props) => {
       const response = await AxiosInstance().post(`/reset-password.php`, body);
       if (response.status === true) {
         toast.success("Password reset successful!");
+        // reset form
+        setPassword("");
+        setPassword_confirmation("");
       } else {
         toast.error("Email or token is invalid.");
       }
