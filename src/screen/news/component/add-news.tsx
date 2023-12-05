@@ -22,8 +22,12 @@ function NewsModal({ isOpen, onRequestClose, onNewsAdded, userId }) {
     const imageUrl = URL.createObjectURL(file);
     setPreviewImage(imageUrl);
     setSelectedImage(file);
+
+    // Upload lên Cloudinary
     const formData = new FormData();
     formData.append("image", file);
+    formData.append("upload_preset", "dqo8whkdr");
+
     const result = await AxiosInstance("multipart/form-data").post(
       "/upload-file.php",
       formData

@@ -180,12 +180,13 @@ function NewsScreen() {
               borderRadius: "50%",
               marginLeft: "10px",
             }}
+            onClick={() => openUpdateUser(user.id)}
           />
           {isOpenUpdateModal || (
             <UpdateUsers
               isOpen={isOpenUpdateUser}
               onRequestClose={closeUpdateUser}
-              id={updateModalId}
+              id={updateUserModalId}
             />
           )}
         </span>
